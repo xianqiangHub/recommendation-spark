@@ -1,22 +1,8 @@
-package com.bigdata;/**
- * Copyright (c) 2018-2028 尚硅谷 All Rights Reserved
- * <p>
- * Project: ECommerceRecommendSystem
- * Package: com.atguigu.kafkastream
- * Version: 1.0
- * <p>
- * Created by wushengran on 2019/4/28 15:08
- */
+package com.bigdata;
 
 import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 
-/**
- * @ClassName: LogProcessor
- * @Description:
- * @Author: wushengran on 2019/4/28 15:08
- * @Version: 1.0
- */
 public class LogProcessor implements Processor<byte[], byte[]>{
     private ProcessorContext context;
     @Override

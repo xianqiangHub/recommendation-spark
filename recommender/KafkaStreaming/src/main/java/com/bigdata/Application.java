@@ -6,6 +6,9 @@ import org.apache.kafka.streams.processor.TopologyBuilder;
 
 import java.util.Properties;
 
+/**
+ *  kafka的stream
+ */
 public class Application {
     public static void main(String[] args) {
         String brokers = "localhost:9092";
@@ -19,7 +22,7 @@ public class Application {
         Properties settings = new Properties();
         settings.put(StreamsConfig.APPLICATION_ID_CONFIG, "logFilter");
         settings.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
-        settings.put(StreamsConfig.ZOOKEEPER_CONNECT_CONFIG, zookeepers);
+//        settings.put(StreamsConfig.ZOOKEEPER_CONNECT_CONFIG, zookeepers);
 
         // 创建kafka stream 配置对象
         StreamsConfig config = new StreamsConfig(settings);
