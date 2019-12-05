@@ -1,7 +1,6 @@
 package com.bigdata
 
 import breeze.numerics.sqrt
-import com.atguigu.offline.OfflineRecommender.MONGODB_RATING_COLLECTION
 import org.apache.spark.SparkConf
 import org.apache.spark.mllib.recommendation.{ALS, MatrixFactorizationModel, Rating}
 import org.apache.spark.rdd.RDD
@@ -9,6 +8,8 @@ import org.apache.spark.sql.SparkSession
 
 object ALSTrainer {
   def main(args: Array[String]): Unit = {
+    // 定义mongodb中存储的表名
+    val MONGODB_RATING_COLLECTION = "Rating"
     val config = Map(
       "spark.cores" -> "local[*]",
       "mongo.uri" -> "mongodb://localhost:27017/recommender",
