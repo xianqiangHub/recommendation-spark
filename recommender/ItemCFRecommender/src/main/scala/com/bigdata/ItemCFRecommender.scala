@@ -1,17 +1,7 @@
-package com.atguigu.itemcf
+package com.bigdata
 
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
-
-/**
-  * Copyright (c) 2018-2028 尚硅谷 All Rights Reserved 
-  *
-  * Project: ECommerceRecommendSystem
-  * Package: com.atguigu.itemcf
-  * Version: 1.0
-  *
-  * Created by wushengran on 2019/4/29 10:48
-  */
 
 case class ProductRating( userId: Int, productId: Int, score: Double, timestamp: Int )
 case class MongoConfig( uri: String, db: String )

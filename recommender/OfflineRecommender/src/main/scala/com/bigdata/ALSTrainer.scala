@@ -1,4 +1,4 @@
-package com.atguigu.offline
+package com.bigdata
 
 import breeze.numerics.sqrt
 import com.atguigu.offline.OfflineRecommender.MONGODB_RATING_COLLECTION
@@ -7,15 +7,6 @@ import org.apache.spark.mllib.recommendation.{ALS, MatrixFactorizationModel, Rat
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 
-/**
-  * Copyright (c) 2018-2028 尚硅谷 All Rights Reserved 
-  *
-  * Project: ECommerceRecommendSystem
-  * Package: com.atguigu.offline
-  * Version: 1.0
-  *
-  * Created by wushengran on 2019/4/27 11:24
-  */
 object ALSTrainer {
   def main(args: Array[String]): Unit = {
     val config = Map(

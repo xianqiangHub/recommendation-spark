@@ -1,19 +1,9 @@
-package com.atguigu.recommender
+package com.bigdata
 
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.{MongoClient, MongoClientURI}
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.{DataFrame, SparkSession}
-
-/**
-  * Copyright (c) 2018-2028 尚硅谷 All Rights Reserved 
-  *
-  * Project: ECommerceRecommendSystem
-  * Package: com.atguigu.recommender
-  * Version: 1.0
-  *
-  * Created by wushengran on 2019/4/26 15:43
-  */
 
 /**
   * Product数据集

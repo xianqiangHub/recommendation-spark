@@ -1,4 +1,4 @@
-package com.atguigu.kafkastream;/**
+package com.bigdata;/**
  * Copyright (c) 2018-2028 尚硅谷 All Rights Reserved
  * <p>
  * Project: ECommerceRecommendSystem

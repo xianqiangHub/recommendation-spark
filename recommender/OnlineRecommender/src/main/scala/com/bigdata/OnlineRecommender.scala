@@ -1,4 +1,4 @@
-package com.atguigu.online
+package com.bigdata
 
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.{MongoClient, MongoClientURI}
@@ -9,15 +9,6 @@ import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, Loca
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import redis.clients.jedis.Jedis
 
-/**
-  * Copyright (c) 2018-2028 尚硅谷 All Rights Reserved 
-  *
-  * Project: ECommerceRecommendSystem
-  * Package: com.atguigu.online
-  * Version: 1.0
-  *
-  * Created by wushengran on 2019/4/28 9:18
-  */
 // 定义一个连接助手对象，建立到redis和mongodb的连接
 object ConnHelper extends Serializable{
   // 懒变量定义，使用的时候才初始化

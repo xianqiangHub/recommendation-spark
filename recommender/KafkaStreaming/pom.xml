@@ -32,7 +32,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.atguigu.kafkastream.Application</mainClass>
+                            <mainClass>com.bigdata.Application</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
