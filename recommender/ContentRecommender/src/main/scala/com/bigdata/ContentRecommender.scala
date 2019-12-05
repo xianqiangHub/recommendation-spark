@@ -6,15 +6,21 @@ import org.apache.spark.ml.linalg.SparseVector
 import org.apache.spark.sql.SparkSession
 import org.jblas.DoubleMatrix
 
-case class Product( productId: Int, name: String, imageUrl: String, categories: String, tags: String )
-case class MongoConfig( uri: String, db: String )
+case class Product(productId: Int, name: String, imageUrl: String, categories: String, tags: String)
+
+case class MongoConfig(uri: String, db: String)
 
 // 定义标准推荐对象
-case class Recommendation( productId: Int, score: Double )
+case class Recommendation(productId: Int, score: Double)
 
 // 定义商品相似度列表
-case class ProductRecs( productId: Int, recs: Seq[Recommendation] )
+case class ProductRecs(productId: Int, recs: Seq[Recommendation])
 
+/**
+  * 用户给商品打上的标签，或者商品本身的标签，得到商品的相似度
+  *
+  * 标签内容分词通过TF-IDF做特征提取，转为行向量，计算向量的余弦相似度，找到相似商品
+  */
 object ContentRecommender {
   // 定义mongodb中存储的表名
   val MONGODB_PRODUCT_COLLECTION = "Product"
@@ -32,7 +38,7 @@ object ContentRecommender {
     val spark = SparkSession.builder().config(sparkConf).getOrCreate()
 
     import spark.implicits._
-    implicit val mongoConfig = MongoConfig( config("mongo.uri"), config("mongo.db") )
+    implicit val mongoConfig = MongoConfig(config("mongo.uri"), config("mongo.db"))
 
     // 载入数据，做预处理
     val productTagsDF = spark.read
@@ -42,7 +48,7 @@ object ContentRecommender {
       .load()
       .as[Product]
       .map(
-        x => ( x.productId, x.name, x.tags.map(c=> if(c=='|') ' ' else c) )
+        x => (x.productId, x.name, x.tags.map(c => if (c == '|') ' ' else c))
       )
       .toDF("productId", "name", "tags")
       .cache()
@@ -65,30 +71,30 @@ object ContentRecommender {
     val rescaledDataDF = idfModel.transform(featurizedDataDF)
 
     // 对数据进行转换，得到RDD形式的features
-    val productFeatures = rescaledDataDF.map{
-      row => ( row.getAs[Int]("productId"), row.getAs[SparseVector]("features").toArray )
+    val productFeatures = rescaledDataDF.map {
+      row => (row.getAs[Int]("productId"), row.getAs[SparseVector]("features").toArray)
     }
       .rdd
-      .map{
-        case (productId, features) => ( productId, new DoubleMatrix(features) )
+      .map {
+        case (productId, features) => (productId, new DoubleMatrix(features)) //row vector
       }
 
     // 两两配对商品，计算余弦相似度
     val productRecs = productFeatures.cartesian(productFeatures)
-      .filter{
+      .filter {
         case (a, b) => a._1 != b._1
       }
       // 计算余弦相似度
-      .map{
+      .map {
       case (a, b) =>
-        val simScore = consinSim( a._2, b._2 )
-        ( a._1, ( b._1, simScore ) )
+        val simScore = consinSim(a._2, b._2)
+        (a._1, (b._1, simScore))
     }
       .filter(_._2._2 > 0.4)
       .groupByKey()
-      .map{
+      .map {
         case (productId, recs) =>
-          ProductRecs( productId, recs.toList.sortWith(_._2>_._2).map(x=>Recommendation(x._1,x._2)) )
+          ProductRecs(productId, recs.toList.sortWith(_._2 > _._2).map(x => Recommendation(x._1, x._2)))
       }
       .toDF()
     productRecs.write
@@ -100,7 +106,8 @@ object ContentRecommender {
 
     spark.stop()
   }
-  def consinSim(product1: DoubleMatrix, product2: DoubleMatrix): Double ={
-    product1.dot(product2)/ ( product1.norm2() * product2.norm2() )
+
+  def consinSim(product1: DoubleMatrix, product2: DoubleMatrix): Double = {
+    product1.dot(product2) / (product1.norm2() * product2.norm2())
   }
 }
