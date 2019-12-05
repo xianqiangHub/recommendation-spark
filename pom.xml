@@ -25,6 +25,7 @@
         <scala.version>2.11.8</scala.version>
         <jblas.version>1.2.1</jblas.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
