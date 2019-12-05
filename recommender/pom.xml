@@ -3,27 +3,25 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>recommendation-spark</artifactId>
         <groupId>com.bigdata</groupId>
+        <artifactId>recommendation-spark</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>recommender</artifactId>
     <packaging>pom</packaging>
-    <modules>
-        <module>StatisticsRecommender</module>
-    </modules>
 
-    <!--<modules>-->
-        <!--&lt;!&ndash;<module>DataLoader</module>&ndash;&gt;-->
-        <!--&lt;!&ndash;<module>StatisticsRecommender</module>&ndash;&gt;-->
-        <!--&lt;!&ndash;<module>OfflineRecommender</module>&ndash;&gt;-->
-        <!--&lt;!&ndash;<module>OnlineRecommender</module>&ndash;&gt;-->
-        <!--&lt;!&ndash;<module>KafkaStreaming</module>&ndash;&gt;-->
-        <!--&lt;!&ndash;<module>ContentRecommender</module>&ndash;&gt;-->
-        <!--&lt;!&ndash;<module>ItemCFRecommender</module>&ndash;&gt;-->
-    <!--</modules>-->
+    <modules>
+        <module>DataLoader</module>
+        <module>StatisticsRecommender</module>
+        <module>OfflineRecommender</module>
+        <module>OnlineRecommender</module>
+        <module>KafkaStreaming</module>
+        <module>ContentRecommender</module>
+        <module>ItemCFRecommender</module>
+    </modules>
 
     <dependencyManagement>
         <dependencies>
