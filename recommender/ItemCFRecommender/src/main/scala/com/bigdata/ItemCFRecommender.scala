@@ -3,14 +3,22 @@ package com.bigdata
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 
-case class ProductRating( userId: Int, productId: Int, score: Double, timestamp: Int )
-case class MongoConfig( uri: String, db: String )
+case class ProductRating(userId: Int, productId: Int, score: Double, timestamp: Int)
+
+case class MongoConfig(uri: String, db: String)
 
 // 定义标准推荐对象
-case class Recommendation( productId: Int, score: Double )
-// 定义商品相似度列表
-case class ProductRecs( productId: Int, recs: Seq[Recommendation] )
+case class Recommendation(productId: Int, score: Double)
 
+// 定义商品相似度列表
+case class ProductRecs(productId: Int, recs: Seq[Recommendation])
+
+/**
+  * 基于商品的协同过滤，找到相似的商品，最后得到的是每个商品以及预测相似商品的数据集
+  *
+  * 相似是 对两个商品同时评分的人数  coCount / math.sqrt( count1 * count2 )
+  * 两个商品同时购买或者同时评分的人数越多越相似，但是两个商品每个购买或者评分越多相似度越低
+  */
 object ItemCFRecommender {
   // 定义常量和表名
   val MONGODB_RATING_COLLECTION = "Rating"
@@ -29,7 +37,7 @@ object ItemCFRecommender {
     val spark = SparkSession.builder().config(sparkConf).getOrCreate()
 
     import spark.implicits._
-    implicit val mongoConfig = MongoConfig( config("mongo.uri"), config("mongo.db") )
+    implicit val mongoConfig = MongoConfig(config("mongo.uri"), config("mongo.db"))
 
     // 加载数据，转换成DF进行处理
     val ratingDF = spark.read
@@ -39,7 +47,7 @@ object ItemCFRecommender {
       .load()
       .as[ProductRating]
       .map(
-        x => ( x.userId, x.productId, x.score )
+        x => (x.userId, x.productId, x.score)
       )
       .toDF("userId", "productId", "score")
       .cache()
@@ -50,10 +58,10 @@ object ItemCFRecommender {
     // 在原有的评分表上rating添加count
     val ratingWithCountDF = ratingDF.join(productRatingCountDF, "productId")
 
-    // 将评分按照用户id两两配对，统计两个商品被同一个用户评分过的次数
+    // 将评分 按照用户id两两配对，统计两个商品被同一个用户评分过的次数
     val joinedDF = ratingWithCountDF.join(ratingWithCountDF, "userId")
-      .toDF("userId","product1","score1","count1","product2","score2","count2")
-      .select("userId","product1","count1","product2","count2")
+      .toDF("userId", "product1", "score1", "count1", "product2", "score2", "count2")
+      .select("userId", "product1", "count1", "product2", "count2")
     // 创建一张临时表，用于写sql查询
     joinedDF.createOrReplaceTempView("joined")
 
@@ -71,20 +79,20 @@ object ItemCFRecommender {
     ).cache()
 
     // 提取需要的数据，包装成( productId1, (productId2, score) )
-    val simDF = cooccurrenceDF.map{
+    val simDF = cooccurrenceDF.map {
       row =>
-        val coocSim = cooccurrenceSim( row.getAs[Long]("cocount"), row.getAs[Long]("count1"), row.getAs[Long]("count2") )
-        ( row.getInt(0), ( row.getInt(1), coocSim ) )
+        val coocSim = cooccurrenceSim(row.getAs[Long]("cocount"), row.getAs[Long]("count1"), row.getAs[Long]("count2"))
+        (row.getInt(0), (row.getInt(1), coocSim))
     }
       .rdd
       .groupByKey()
-      .map{
+      .map {
         case (productId, recs) =>
-          ProductRecs( productId, recs.toList
-                                        .filter(x=>x._1 != productId)
-                                        .sortWith(_._2>_._2)
-                                        .take(MAX_RECOMMENDATION)
-                                        .map(x=>Recommendation(x._1,x._2)) )
+          ProductRecs(productId, recs.toList
+            .filter(x => x._1 != productId)
+            .sortWith(_._2 > _._2)
+            .take(MAX_RECOMMENDATION)
+            .map(x => Recommendation(x._1, x._2)))
       }
       .toDF()
 
@@ -100,7 +108,7 @@ object ItemCFRecommender {
   }
 
   // 按照公式计算同现相似度
-  def cooccurrenceSim(coCount: Long, count1: Long, count2: Long): Double ={
-    coCount / math.sqrt( count1 * count2 )
+  def cooccurrenceSim(coCount: Long, count1: Long, count2: Long): Double = {
+    coCount / math.sqrt(count1 * count2)
   }
 }
